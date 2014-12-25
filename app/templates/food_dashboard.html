@@ -1,0 +1,34 @@
+{% extends 'layout.html' %}
+{% block content %}
+<div id="meal_list">
+    <h3>Meals:</h3>
+    {% for meal in meals %}
+        <span class="meal" id="{{meal.id}}">{{meal.label}}</span>
+    {% endfor %}
+</div>
+<div id="food_planner_links">
+    <span id="add_item">Add Item</span> | <span id="add_meal">Add Meal</span>
+</div>
+<div id="food_planner_content">
+</div>
+<script type="text/javascript">
+    $(function(){
+        $('#add_item').click(function(e) {
+            $.post("/add_food_item", {}, function(response, success){
+                $("#food_planner_content").html(response);
+            });
+        });
+        $('#add_meal').click(function(e) {
+            $.post("/add_meal", {}, function(response, success){
+                $("#food_planner_content").html(response);
+            });
+        });
+        $('.meal').click(function(e) {
+            $.post("/return_meal_content", {'meal_id': this.id}, function(response, success){
+                $("#food_planner_content").html(response);
+            });
+        });
+    });
+</script>
+
+{% endblock %}

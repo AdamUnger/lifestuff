@@ -1,0 +1,25 @@
+
+        <form action="/add_meal" method="POST" name="add_blog_post">
+            {{form.hidden_tag()}}
+            <table>
+                <tr><td>Label: </td><td>{{form.label(size=100)}}</td>
+                    <td>{% for error in form.errors.label %}
+                                <span style="color: red;">[{{error}}]</span><br>
+                        {% endfor %}
+                    </td>
+                </tr>
+                <tr><td>Minutes: </td><td>{{form.minutes(size=25)}}</td>
+                    <td>{% for error in form.errors.minutes %}
+                            <span style="color: red;">[{{error}}]</span><br>
+                        {% endfor %}
+                    </td>
+                </tr>
+                <tr><td>Recipe: </td><td>{{form.recipe(rows=25, cols=100)}}</td>
+                    <td>{% for error in form.errors.recipe %}
+                            <span style="color: red;">[{{error}}]</span><br>
+                        {% endfor %}
+                    </td>
+                </tr>
+            </table>
+            <p><input type="submit" value="Add Meal"></p>
+        </form>

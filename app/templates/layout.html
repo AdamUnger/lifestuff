@@ -1,0 +1,52 @@
+<html>
+    <head>
+        <title>Ungertime - {{ title }}</title>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    </head>
+    <body>
+        <div class="topmenu">
+            <div class="logo"><h1>Ungertime</h1></div>
+            <a href="{{ url_for('tools') }}"><div class="menubutton">Tools</div></a>
+            <a href="{{ url_for('blog') }}"><div class="menubutton">Blog</div></a>
+            <a href="{{ url_for('index') }}"><div class="menubutton">Home</div></a>
+
+        </div>
+        <div class="main_content">
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                <div class="mainflash">
+                    <ul>
+                    {% for message in messages %}
+                        <li>{{ message }} </li>
+                    {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+            {% endwith %}
+            <h2>{{ header }}</h2>
+            {% block content %}
+            {% endblock %}
+        </div>
+        <div class="footer">
+            {% if user.is_authenticated() %}
+            <div class="welcomemessage">
+                Welcome, {{ user.nickname }}
+            </div>
+            <div class="adminlink">
+                <a href="{{ url_for('logout') }}">Logout</a>
+            </div>
+            <div class="adminlink">
+                <a href="{{ url_for('add_blog_post') }}">Add Blog Post</a>
+            </div>
+            <div class="adminlink">
+                <a href="{{ url_for('create_user') }}">Create User</a>
+            </div>
+            {% else %}
+            <div class="adminlink">
+                <a href="{{ url_for('login') }}">Login</a>
+            </div>
+            {% endif %}
+        </div>
+    </body>
+</html>

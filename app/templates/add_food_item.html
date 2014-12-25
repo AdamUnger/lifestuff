@@ -1,0 +1,31 @@
+
+        <form action="" method="POST" name="add_blog_post">
+            {{form.hidden_tag()}}
+            <table>
+                <tr><td>Label: </td><td>{{form.label(size=100)}}</td>
+                    <td>{% for error in form.errors.label %}
+                                <span style="color: red;">[{{error}}]</span><br>
+                        {% endfor %}
+                    </td>
+                </tr>
+                <tr><td>Cost: </td><td>{{form.cost(size=25)}} (USD)</td>
+                    <td>{% for error in form.errors.cost %}
+                            <span style="color: red;">[{{error}}]</span><br>
+                        {% endfor %}
+                    </td>
+                </tr>
+                <tr><td>Volume: </td><td>{{form.volume(size=25)}}</td>
+                    <td>{% for error in form.errors.volume %}
+                            <span style="color: red;">[{{error}}]</span><br>
+                        {% endfor %}
+                    </td>
+                </tr>
+                <tr><td>Increment: </td><td>{{form.increment()}}</td>
+                    <td>{% for error in form.errors.increment %}
+                            <span style="color: red;">[{{error}}]</span><br>
+                        {% endfor %}
+                    </td>
+                </tr>
+            </table>
+            <p><input type="submit" value="Add Item"></p>
+        </form>

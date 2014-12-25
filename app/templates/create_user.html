@@ -1,0 +1,35 @@
+{% extends 'layout.html' %}
+{% block content %}
+        <form action="" method="POST" name="create_user">
+            {{form.hidden_tag()}}
+            <table>
+                <tr><td>Nickname: </td><td>{{form.nickname(size=40)}}
+                    <td>{% for error in form.errors.nickname %}
+                                <span style="color: red;">[{{error}}]</span><br>
+                        {% endfor %}
+                    </td>
+                </tr>
+                <tr><td>Email: </td><td>{{form.email(size=40)}}</td>
+                    <td>{% for error in form.errors.email %}
+                            <span style="color: red;">[{{error}}]</span><br>
+                        {% endfor %}
+                    </td>
+                </tr>
+                <tr><td>Password: </td><td>{{form.password(size=40)}}</td>
+                    <td>{% for error in form.errors.password %}
+                            <span style="color: red;">[{{error}}]</span><br>
+                        {% endfor %}
+                    </td>
+                </tr>
+                <tr><td>Confirm Password: </td><td>{{form.confirm(size=40)}}</td>
+                    <td>{% for error in form.errors.confirm %}
+                            <span style="color: red;">[{{error}}]</span><br>
+                        {% endfor %}
+                    </td>
+                </tr>
+                <tr><td>Is an administrator </td><td>{{form.is_admin}}</td></tr>
+            </table>
+            <p><input type="submit" value="Create user"></p>
+        </form>
+
+{% endblock %}

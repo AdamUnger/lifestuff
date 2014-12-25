@@ -1,0 +1,22 @@
+{% extends 'layout.html' %}
+{% block content %}
+        <form action="" method="POST" name="add_blog_post">
+            {{form.hidden_tag()}}
+            <table>
+                <tr><td>Title: </td><td>{{form.title(size=100)}}</td>
+                    <td>{% for error in form.errors.title %}
+                                <span style="color: red;">[{{error}}]</span><br>
+                        {% endfor %}
+                    </td>
+                </tr>
+                <tr><td>Content: </td><td>{{form.content(rows=25, cols=100)}}</td>
+                    <td>{% for error in form.errors.content %}
+                            <span style="color: red;">[{{error}}]</span><br>
+                        {% endfor %}
+                    </td>
+                </tr>
+            </table>
+            <p><input type="submit" value="Post"></p>
+        </form>
+
+{% endblock %}
