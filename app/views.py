@@ -3,7 +3,8 @@ from flask import render_template, flash, redirect, url_for, request
 from flask.ext.login import login_user, logout_user, current_user, login_required
 
 from models import User, Post, Item, Meal, ROLE_ADMIN, ROLE_USER
-from forms import LoginForm, CreateUserForm, AddPostForm, EditPostForm, DataUploadForm, AddFoodItemForm, AddMealForm
+from forms import LoginForm, CreateUserForm, AddPostForm, EditPostForm, DataUploadForm, AddFoodItemForm, AddMealForm, NlpForm
+from nlpsandbox import Text, Sentence
 
 from sqlalchemy.exc import IntegrityError
 from werkzeug.utils import secure_filename # For file uploading
@@ -344,3 +345,134 @@ def add_meal():
                            title = title,
                            header = header,
                            form = form)
+
+# ------------------- nlp --------------------
+import nltk
+
+@app.route('/nlp', methods = ['GET','POST'])
+@login_required
+def nlp():
+    user = current_user
+    title = 'NLP'
+    header = 'NLP Sandbox'
+    form = NlpForm()
+
+    d = {}
+    if form.validate_on_submit():
+        sentence = form.sentence.data
+        tokens = nltk.word_tokenize(sentence)
+        tagged = nltk.pos_tag(tokens)
+
+        types = {}
+        for token in tagged:
+            if token[1] not in types.keys():
+                types[token[1]] = [token[0]]
+            else:
+                types[token[1]].append(token[0])
+
+        nounTags = []
+        for tag in types.keys():
+            if tag[0:2] == 'NN' or tag in ['PRP', 'JJ', 'DT']:
+                nounTags.append(tag)
+
+        verbTags = []
+        for tag in types.keys():
+            if tag[0:2] == 'VB' or tag in []:
+                verbTags.append(tag)
+
+        # Break up into parts
+        parts = []
+        parts.append([])
+        switch = 'verb'
+
+        for token in tagged:
+            if token[0] == '.':
+                parts[len(parts)-1].append(token)
+                parts.append([])
+                switch = 'verb'
+            elif token[1] == 'IN':
+                parts.append([])
+                parts[len(parts)-1].append(token)
+                switch = 'verb'
+            else:
+                checkList = nounTags if switch == 'noun' else verbTags
+
+                if token[1] not in checkList:
+                    parts[len(parts)-1].append(token)
+                else:
+                    parts.append([])
+                    switch = 'noun' if switch == 'verb' else 'verb'
+                    parts[len(parts)-1].append(token)
+
+        metaParts = []
+        switch = 'verb'
+        metaParts.append([])
+        for part in parts:
+            if len(part) > 0:
+                if switch == 'verb':
+                    for token in part:
+                        if token[1] in verbTags:
+                            metaParts.append([])
+                            switch = 'notverb'
+                        index = len(metaParts)-1 if len(metaParts) > 0 else 0
+                        metaParts[index].append(part)
+                        break
+                else:
+                    for token in part:
+                        if token[1] not in verbTags:
+                            metaParts.append([])
+                            switch = 'verb'
+                        index = len(metaParts)-1 if len(metaParts) > 0 else 0
+                        metaParts[index].append(part)
+                        break
+
+                if part[len(part)-1][0] == '.':
+                    switch = 'notverb'
+
+
+
+        subjects = ', '.join([token for token, tag in tagged if tag in nounTags])
+        verbs = ', '.join([token for token, tag in tagged if tag in verbTags])
+
+
+        d['sentence'] = sentence
+        d['tokens'] = tokens
+        d['tagged'] = tagged
+        d['types'] = types
+        d['nounTags'] = nounTags
+        d['verbTags'] = verbTags
+        d['subjects'] = subjects
+        d['verbs'] = verbs
+        d['parts'] = parts
+        d['metaParts'] = metaParts
+
+
+    return render_template('nlp.html',
+                           user = user,
+                           title = title,
+                           header = header,
+                           form = form,
+                           d = d
+    )
+
+@app.route('/nlpnew', methods = ['GET','POST'])
+@login_required
+def nlpnew():
+    user = current_user
+    title = 'NLP'
+    header = 'NLP Sandbox'
+    form = NlpForm()
+
+    text = False
+
+    if form.validate_on_submit():
+        text = Text(form.sentence.data)
+
+
+    return render_template('nlpnew.html',
+                           user = user,
+                           title = title,
+                           header = header,
+                           form = form,
+                           text = text
+    )

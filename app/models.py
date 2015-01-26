@@ -14,6 +14,7 @@ class User(db.Model):
     role = db.Column(db.SmallInteger, default = ROLE_USER)
     posts = db.relationship('Post', backref = 'author', lazy = 'dynamic')
     meals = db.relationship('Meal', backref = 'user', lazy = 'dynamic')
+    incomes = db.relationship('Income', backref = 'user', lazy = 'dynamic')
 
 
     # Needed for flask-login
@@ -90,3 +91,20 @@ class Meal(db.Model):
             item_list += item
 
         return len(item_list)
+
+class Income(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    monthly_income = db.Column(db.Integer)
+    timestamp = db.Column(db.DateTime, default = datetime.datetime.now())
+
+    def __repr__(self):
+        return '<Income for user {user}'.format(user = self.user.nickname)
+
+    def forecast(self, months=[1,2,3,4,5,6,7,8,9,10,11,12]):
+        return_list = []
+        for i, month in enumerate(months):
+            return_list += month * self.monthly_income
+
+        return return_list
+    

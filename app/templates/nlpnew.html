@@ -1,0 +1,38 @@
+{% extends 'layout.html' %}
+{% block content %}
+        <form action="" method="POST" name="nlp_process">
+            {{form.hidden_tag()}}
+            <table>
+                <tr><td>Sentence: </td><td>{{form.sentence(rows=10, cols=50)}}</td>
+                    <td>{% for error in form.errors.sentence %}
+                            <span style="color: red;">[{{error}}]</span><br>
+                        {% endfor %}
+                    </td>
+                </tr>
+            </table><BR>
+        <p><input type="submit" value="Process Sentence"></p>
+        </form>
+        {% if text %}
+            {% for sentence in text.sentences() %}
+                <p>
+                    Sentence: {{ sentence.text }}<BR><BR>
+
+                    Nested Parts:<BR>
+                    <div class="nlp_text parent">
+                    {% for nestedPart in sentence.nestedParts() %}
+                        <div class="nlp_text middle">
+                            {% for part in nestedPart %}
+                                <span class="nlp_text child {{ part[0][1][0] }}">
+                                {% for token in part %}
+                                    {{ token[0] }}
+                                {% endfor %}
+                                </span>
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
+                    </div>
+                </p>
+
+            {% endfor %}
+        {% endif %}
+{% endblock %}

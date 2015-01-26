@@ -50,3 +50,5 @@ class AddMealForm(Form):
     minutes = TextField('minutes')
     recipe = TextAreaField('recipe')
 
+class NlpForm(Form):
+    sentence = TextAreaField('sentence')
